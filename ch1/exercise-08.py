@@ -1,7 +1,7 @@
 # (Advanced) Modify the chaos program so that it accepts two inputs and then 
-# prints a table with two columns similar to the one shown in Section 1.8.
-#  (Note: You will probably not be able to get the columns to line up as nicely
-#  as those in the example. Chapter 8 discusses how to print numbers with a 
+# prints a table with two columns similar to the one shown in Section 1.9.
+# (Note: You will probably not be able to get the columns to line up as nicely
+# as those in the example. Chapter 8 discusses how to print numbers with a 
 # fixed number of decimal places.)
 
 def exercise08():
