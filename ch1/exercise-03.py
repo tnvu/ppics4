@@ -5,7 +5,7 @@
 # obtained from the original program. Write a short paragraph describing any
 # differences that you notice in the behavior of the two versions.
 
-def main():
+def exercise03():
     print("This program illustrates a chaotic function")
     x = float(input("Enter a number between 0 and 1: "))
     for i in range(10):
@@ -13,7 +13,7 @@ def main():
         print(x)
 
 
-main()
+exercise03()
 
 # Enter a number between 0 and 1: 0.25
 # 0.375

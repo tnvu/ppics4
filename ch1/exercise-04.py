@@ -1,6 +1,6 @@
 # Modify the chaos program so that it prints out 20 values instead of 10.
 
-def main():
+def exercise04():
     print("This program illustrates a chaotic function")
     x = float(input("Enter a number between 0 and 1: "))
     for i in range(20):
