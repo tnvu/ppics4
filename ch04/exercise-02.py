@@ -10,7 +10,7 @@ def main():
     win = graphics.GraphWin()
     win.setCoords(0,0, 30, 30)
     center = graphics.Point(15, 15)
-    
+
     white = graphics.Circle(center, 15)
     white.setFill("white")
     white.draw(win)
