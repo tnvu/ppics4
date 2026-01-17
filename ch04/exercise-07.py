@@ -1,12 +1,12 @@
 # Circle Intersection.
 # Write a program that computes the intersection of a circle with a horizontal
 # line and displays the information textually and graphically.
-#   Input: Radius of the circle and the y-intercept of the line.
+#   Input:  Radius of the circle and the y-intercept of the line.
 #   Output: Draw a circle centered at (0, 0) with the given radius in a window
-#       with coordinates running from -10,-10 to 10,10.
-#       Draw a horizontal line across the window with the given y-intercept.
-#       Draw the two points of intersection in red.
-#       Print out the z values of the points of intersection.
+#           with coordinates running from -10,-10 to 10,10.
+#           Draw a horizontal line across the window with the given y-intercept.
+#           Draw the two points of intersection in red.
+#           Print out the x values of the points of intersection.
 # Formula: x = +- sqrt(r^2 - y^2)
 
 import graphics
@@ -43,11 +43,19 @@ def main():
     circle.draw(win)
     line = graphics.Line(graphics.Point(-10, y),
                          graphics.Point(10, y))
-    line.setOutline("red")
+    line.setOutline("green")
     line.draw(win)
 
-    x = abs(math.sqrt(radius**2 - y**2))
-    graphics.Text(graphics.Point(0, -9), "x = +/-" + str(x)).draw(win)
+    x_plus = abs(math.sqrt(radius**2 - y**2))
+    p = graphics.Circle(graphics.Point(x_plus, y), 0.25)
+    p.setFill("red")
+    p.draw(win)
+    graphics.Text(graphics.Point(x_plus, y+1), str(x_plus)).draw(win)
+    x_minus = -1 * x_plus
+    p = graphics.Circle(graphics.Point(x_minus, y), 0.25)
+    p.setFill("red")
+    p.draw(win)
+    graphics.Text(graphics.Point(x_minus, y-1), str(x_minus)).draw(win)
 
     win.getMouse()
     win.close()
