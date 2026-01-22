@@ -9,10 +9,10 @@
 
 def main():
     n = int(input("Which Fibonacci number: "))
-    prev = 0
-    curr = 1
-    for _ in range(1, n):
-        prev, curr = curr, prev + curr
-    print("Fibonacci number: ", curr)
+    a = 0
+    b = 1
+    for _ in range(n):
+        a, b = b, a+b
+    print("Fibonacci number: ", a)
 
 main()
