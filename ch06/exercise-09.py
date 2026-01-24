@@ -14,14 +14,14 @@ def main():
         c = year % 7
         d = (19 * a + 24) % 30
         e = (2 * b + 4 * c + 6 * d + 5) % 7
+        day = 22 + d + e
         
         # March has 31 days
-        if (22 + d + e) <= 31:
+        if day <= 31:
             month = 'March'
-            day = 22 + d + e
         else:
             month = 'April'
-            day = (22 + d + e) - 31
+            day = day - 31
         print("Easter = ", month, day)
 
 main()
