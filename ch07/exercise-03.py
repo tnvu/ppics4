@@ -5,18 +5,19 @@
 
 import math
 
-def main():
-    n = int(input("Enter n (>2): "))
+def is_prime(n):
     x = 2
-    is_prime = True
     while x <= math.sqrt(n):
         if n % x == 0:
-            is_prime = False
-            break
+            return False
         x = x + 1
-    if is_prime:
-        print("Is prime: ", n)
+    return True
+
+def main():
+    n = int(input("Enter a number >= 2: "))
+    if is_prime(n):
+        print("Is prime:", n)
     else:
-        print("Is not prime: ", n)
+        print("Is not prime:", n)
 
 main()
