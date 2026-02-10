@@ -6,12 +6,16 @@
 # very auspicious number, by the way). Write a program that calculates the
 # numeric value of a single name provided as input.
 
-def main():
-    name = input("Enter name: ")
+def calc_name_value(name):
     value = 0
     for c in name:
         if c.isalpha():
             value = value + (ord(c.lower()) - ord('a') + 1)
+    return value
+
+def main():
+    name = input("Enter name: ")
+    value = calc_name_value(name)
     print("Value =", value)
 
 main()
