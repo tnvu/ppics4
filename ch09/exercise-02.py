@@ -10,6 +10,8 @@
 # d) reverse(myList) (like myList.reverse())
 # e) sort(myList) (like myList.sort())
 
+import unittest
+
 def count(myList, x):
     total = 0
     for i in myList:
@@ -27,7 +29,7 @@ def index(myList, x):
     for i in range(len(myList)):
         if myList[i] == x:
             return i
-    raise ValueError(f"'{x}' is not in list")
+    return -1
 
 def reverse(myList):
     i = 0
@@ -50,3 +52,62 @@ def sort(myList):
     sort(myList)
     # Add biggest item to the end
     myList.append(biggest)
+
+class TestArrayOperations(unittest.TestCase):
+    def testCount(self):
+        self.assertEqual(0, count([], 0))
+        self.assertEqual(0, count([0], 1))
+        self.assertEqual(1, count([1], 1))
+        self.assertEqual(0, count([0, 1], 2))
+        self.assertEqual(1, count([0, 1], 1))
+        self.assertEqual(2, count([1, 0, 1], 1))
+    def testIsIn(self):
+        self.assertFalse(isin([], 0))
+        self.assertTrue(isin([0], 0))
+        self.assertFalse(isin([0], 1))
+        self.assertFalse(isin([0, 1], 2))
+        self.assertTrue(isin([0, 1], 1))
+        self.assertTrue(isin([0, 1, 2], 1))
+        self.assertFalse(isin([0, 1, 2], 3))
+    def testIndex(self):
+        self.assertEqual(-1, index([], 0))
+        self.assertEqual(-1, index([0], 1))
+        self.assertEqual(0, index([1], 1))
+        self.assertEqual(-1, index([0, 1], 2))
+        self.assertEqual(1, index([0, 1], 1))
+        self.assertEqual(0, index([1, 0, 1], 1))
+    def testReverse(self):
+        myList = []
+        reverse(myList)
+        self.assertListEqual([], myList)
+        myList = [0]
+        reverse(myList)
+        self.assertListEqual([0], myList)
+        myList = [0, 1]
+        reverse(myList)
+        self.assertListEqual([1, 0], myList)
+        myList = [1, 0]
+        reverse(myList)
+        self.assertListEqual([0, 1], myList)
+        myList = [0, 1, 2, 3]
+        reverse(myList)
+        self.assertListEqual([3, 2, 1, 0], myList)
+    def testSort(self):
+        myList = []
+        sort(myList)
+        self.assertListEqual([], myList)
+        myList = [0]
+        sort(myList)
+        self.assertListEqual([0], myList)
+        myList = [0, 1]
+        sort(myList)
+        self.assertListEqual([0, 1], myList)
+        myList = [1, 0]
+        sort(myList)
+        self.assertListEqual([0, 1], myList)
+        myList = [2, 1, 3, 0]
+        sort(myList)
+        self.assertListEqual([0, 1, 2, 3], myList)
+
+if __name__ == '__main__':
+    unittest.main()
