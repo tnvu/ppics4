@@ -7,8 +7,17 @@
 # For example, innerProd([1, 2, 3], [4, 5, 6]) produces 32
 # since 1(4)+ 2(5) + 3(6) = 32
 
+import unittest
+
 def innerProd(x, y):
     total = 0
     for i in range(len(x)):
         total = total + (x[i] * y[i])
     return total
+
+class TestInnerProd(unittest.TestCase):
+    def testInnerProd(self):
+        self.assertEqual(32, innerProd([1, 2, 3], [4, 5, 6]))
+
+if __name__ == '__main__':
+    unittest.main()
