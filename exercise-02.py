@@ -15,3 +15,5 @@ def main():
             total_mileage = total_mileage + mileage
             total_gas = total_gas + gas_used
     print(f"Overall mpg = {total_mileage/total_gas}")
+
+main()
