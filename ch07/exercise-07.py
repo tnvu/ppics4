@@ -12,14 +12,14 @@ def main():
     while True:
         odo_current = input("Enter current odometer: ")
         if odo_current == "": break
+        odo_current = float(odo_current)
+        mileage = odo_current - (odo_start + total_mileage)
+
         gas_used = input("Enter amount of gas used: ")
         if gas_used == "": break
-        
-        odo_current = float(odo_current)
         gas_used = float(gas_used)
-        mileage = odo_current - odo_start
+        
         print("Leg mpg =", mileage / gas_used)
-
         total_mileage = total_mileage + mileage
         total_gas_used = total_gas_used + gas_used
     print("Overall mpg =", total_mileage / total_gas_used)
