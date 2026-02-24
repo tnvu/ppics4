@@ -59,10 +59,9 @@ def main():
     print("This program sorts student grade information by GPA")
     filename = input("Enter the name of the data file: ")
     data = readStudents(filename)
-    # Store index of Student since we don't know how to sort Students
-    decoratedList = [(s.gpa(), data.index(s)) for s in data]
-    decoratedList.sort(reverse=True)
-    data = [data[e[1]] for e in decoratedList]
+    data = [(s.gpa(), i, s) for i, s in enumerate(data)]
+    data.sort(reverse=True)
+    data = [s for gpa, i, s in data]
     filename = input("Enter a name for the output file: ")
     writeStudents(data, filename)
     print("The data has been written to", filename)
