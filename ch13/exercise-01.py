@@ -96,6 +96,10 @@ class Button:
         self.rect.setWidth(1)
         self.active = False
 
+    def undraw(self):
+        self.label.undraw()
+        self.rect.undraw()
+
 class DieView:
     """DieView is a widget that displays a graphical representation of a
     standard six-sided die.
@@ -172,22 +176,17 @@ class GraphicsInterface:
         banner.setFill("yellow2")
         banner.setStyle("bold")
         banner.draw(self.win)
-        self.msg = graphics.Text(graphics.Point(300, 380),
-                                 "Welcome to the Dice Table")
+        # Splash screen
+        self.msg = graphics.Text(graphics.Point(300, 200),
+                                 "Welcome to video poker.")
         self.msg.setSize(18)
         self.msg.draw(self.win)
-        self.createDice(graphics.Point(300, 100), 75)
         self.buttons = []
-        self.addDiceButtons(graphics.Point(300, 170), 75, 30)
-        b = Button(self.win, graphics.Point(300, 230), 400, 40, "Roll Dice")
-        self.buttons.append(b)
-        b = Button(self.win, graphics.Point(300, 280), 150, 40, "Score")
+        b = Button(self.win, graphics.Point(300, 280), 400, 40, "Let's Play")
         self.buttons.append(b)
         b = Button(self.win, graphics.Point(570, 375), 40, 30, "Quit")
         self.buttons.append(b)
-        self.money = graphics.Text(graphics.Point(300, 325), "$100")
-        self.money.setSize(18)
-        self.money.draw(self.win)
+        self.playInitialized = False
 
     def choose(self, choices):
         buttons = self.buttons
@@ -235,11 +234,40 @@ class GraphicsInterface:
     def setDice(self, values):
         for i in range(5):
             self.dice[i].setValue(values[i])
-    
+
+    def setupPlay(self):
+        if self.playInitialized:
+            return
+        # Remove splash screen interface
+        self.msg.undraw()
+        for b in self.buttons:
+            b.undraw()
+        # Draw playing interface
+        self.msg = graphics.Text(graphics.Point(300, 380),
+                                 "Welcome to the Dice Table")
+        self.msg.setSize(18)
+        self.msg.draw(self.win)
+        self.createDice(graphics.Point(300, 100), 75)
+        self.buttons = []
+        self.addDiceButtons(graphics.Point(300, 170), 75, 30)
+        b = Button(self.win, graphics.Point(300, 230), 400, 40, "Roll Dice")
+        self.buttons.append(b)
+        b = Button(self.win, graphics.Point(300, 280), 150, 40, "Score")
+        self.buttons.append(b)
+        b = Button(self.win, graphics.Point(570, 375), 40, 30, "Quit")
+        self.buttons.append(b)
+        self.money = graphics.Text(graphics.Point(300, 325), "$100")
+        self.money.setSize(18)
+        self.money.draw(self.win)
+        self.playInitialized = True
+
     def wantToPlay(self):
-        ans = self.choose(["Roll Dice", "Quit"])
+        ans = self.choose(["Let's Play", "Roll Dice", "Quit"])
         self.msg.setText("")
-        return ans == "Roll Dice"
+        if ans in ["Let's Play", "Roll Dice"]:
+            self.setupPlay()
+            return True
+        return False
     
     def chooseDice(self):
         # choices is a list of the indexes of the selected dice
