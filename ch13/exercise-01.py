@@ -15,6 +15,42 @@
 import graphics
 import random
 
+class Dice:
+    def __init__(self):
+        self.dice = [0] * 5
+        self.rollAll()
+
+    def roll(self, which):
+        for pos in which:
+            self.dice[pos] = random.randrange(1, 7)
+
+    def rollAll(self):
+        self.roll(range(5))
+
+    def values(self):
+        return self.dice[:]
+    
+    def score(self):
+        # Create the counts list
+        counts = [0] * 7
+        for value in self.dice:
+            counts[value] = counts[value] + 1
+        # score the hand
+        if 5 in counts:
+            return "Five of a Kind", 30
+        elif 4 in counts:
+            return "Four of a Kind", 15
+        elif (3 in counts) and (2 in counts):
+            return "Full House", 12
+        elif 3 in counts:
+            return "Three of a Kind", 8
+        elif not (2 in counts) and (counts[1] == 0 or counts[6] == 0):
+            return "Straight", 20
+        elif counts.count(2) == 2:
+            return "Two Pairs", 5
+        else:
+            return "Garbage", 0
+        
 class Button:
     """A button is a labeled rectangle in a window.
     It is activated or deactivated with the activate()
@@ -24,10 +60,11 @@ class Button:
     def __init__(self, win, center, width, height, label):
         """ Creates a rectangular button, eg:
         qb = Button(myWin, centerPoint, width, height, 'Quit') """ 
+
         w, h = width/2.0, height/2.0
         x, y = center.getX(), center.getY()
-        self.xmax, self.xmin = x + w, x - w
-        self.ymax, self.ymin = y + h, y - h
+        self.xmax, self.xmin = x+w, x-w
+        self.ymax, self.ymin = y+h, y-h
         p1 = graphics.Point(self.xmin, self.ymin)
         p2 = graphics.Point(self.xmax, self.ymax)
         self.rect = graphics.Rectangle(p1, p2)
@@ -63,8 +100,9 @@ class DieView:
     """DieView is a widget that displays a graphical representation of a
     standard six-sided die.
     """
+
     def __init__(self, win, center, size):
-        """Create a view of a die, e.g.: d1 = DieView(myWin, Point(40,50), 20)
+        """Create a view of a die, e.g.: d1 = GDie(myWin, Point(40,50), 20)
            creates a die centered at (40,50) having sides of length
            20.
         """
@@ -75,6 +113,7 @@ class DieView:
         self.psize = 0.1 * size    # radius of each pip
         hsize = size / 2.0         # half of size
         offset = 0.6 * hsize       # distance from center to outer pips
+
         # create a square for the face
         cx, cy = center.getX(), center.getY()
         p1 = graphics.Point(cx - hsize, cy - hsize)
@@ -82,6 +121,7 @@ class DieView:
         rect = graphics.Rectangle(p1, p2)
         rect.draw(win)
         rect.setFill(self.background)
+
         # Create a list of 7 circles in standard pip locations
         self.pips = []
         self._addPip(cx - offset, cy - offset)  # upper left
@@ -91,9 +131,11 @@ class DieView:
         self._addPip(cx + offset, cy - offset)  # upper right
         self._addPip(cx + offset, cy)           # center right
         self._addPip(cx + offset, cy + offset)  # lower right
+
         # Create a table saying which pips are on for each value.
         self.onTable = [[], [3], [2, 4], [2, 3, 4], [0, 2, 4, 6],
                         [0, 2, 3, 4, 6], [0, 1, 2, 4, 5, 6]]
+
         # start with view showing 1
         self.setValue(1)
 
@@ -111,6 +153,7 @@ class DieView:
         # Turn all the pips off
         for pip in self.pips:
             pip.setFill(self.background)
+
         # Turn the appropriate pips on
         on = self.onTable[value]
         for i in on:
@@ -120,42 +163,110 @@ class DieView:
         self.foreground = color
         self.setValue(self.value)
 
-class Dice:
+class GraphicsInterface:
     def __init__(self):
-        self.dice = [0] * 5
-        self.rollAll()
+        self.win = graphics.GraphWin("Dice Poker", 600, 400)
+        self.win.setBackground("green3")
+        banner = graphics.Text(graphics.Point(300, 30), "Python Poker Parlor")
+        banner.setSize(24)
+        banner.setFill("yellow2")
+        banner.setStyle("bold")
+        banner.draw(self.win)
+        self.msg = graphics.Text(graphics.Point(300, 380),
+                                 "Welcome to the Dice Table")
+        self.msg.setSize(18)
+        self.msg.draw(self.win)
+        self.createDice(graphics.Point(300, 100), 75)
+        self.buttons = []
+        self.addDiceButtons(graphics.Point(300, 170), 75, 30)
+        b = Button(self.win, graphics.Point(300, 230), 400, 40, "Roll Dice")
+        self.buttons.append(b)
+        b = Button(self.win, graphics.Point(300, 280), 150, 40, "Score")
+        self.buttons.append(b)
+        b = Button(self.win, graphics.Point(570, 375), 40, 30, "Quit")
+        self.buttons.append(b)
+        self.money = graphics.Text(graphics.Point(300, 325), "$100")
+        self.money.setSize(18)
+        self.money.draw(self.win)
 
-    def roll(self, which):
-        for pos in which:
-            self.dice[pos] = random.randrange(1, 7)
+    def choose(self, choices):
+        buttons = self.buttons
 
-    def rollAll(self):
-        self.roll(range(5))
-
-    def values(self):
-        return self.dice[:]
-    
-    def score(self):
-        # Create the counts list
-        counts = [0] * 7
-        for value in self.dice:
-            counts[value] = counts[value] + 1
-        # Score the hand
-        if 5 in counts:
-            return "Five of a Kind", 30
-        elif 4 in counts:
-            return "Four of a Kind", 15
-        elif (3 in counts) and (2 in counts):
-            return "Full House", 12
-        elif 3 in counts:
-            return "Three of a Kind", 8
-        elif not (2 in counts) and (counts[1] == 0 or counts[6] == 0):
-            return "Straight", 20
-        elif counts.count(2) == 2:
-            return "Two Pairs", 5
-        else:
-            return "Garbage", 0
+        # activate choice buttons, deactivate others
+        for b in buttons:
+            if b.getLabel() in choices:
+                b.activate()
+            else:
+                b.deactivate()
         
+        # get mouse clicks until an active button is clicked
+        while True:
+            p = self.win.getMouse()
+            for b in buttons:
+                if b.clicked(p):
+                    return b.getLabel()     # function exit here
+
+    def createDice(self, center, size):
+        center.move(-3 * size, 0)
+        self.dice = []
+        for i in range(5):
+            view = DieView(self.win, center, size)
+            self.dice.append(view)
+            center.move(1.5 * size, 0)
+
+    def addDiceButtons(self, center, width, height):
+        center.move(-3 * width, 0)
+        for i in range(1, 6):
+            label = f"Die {i}"
+            b = Button(self.win, center, width, height, label)
+            self.buttons.append(b)
+            center.move(1.5 * width, 0)
+    
+    def setMoney(self, amt):
+        self.money.setText(f"${amt}")
+
+    def showResult(self, msg, score):
+        if score > 0:
+            text = f"{msg}! You win ${score}"
+        else:
+            text = f"You rolled {msg}"
+        self.msg.setText(text)
+
+    def setDice(self, values):
+        for i in range(5):
+            self.dice[i].setValue(values[i])
+    
+    def wantToPlay(self):
+        ans = self.choose(["Roll Dice", "Quit"])
+        self.msg.setText("")
+        return ans == "Roll Dice"
+    
+    def chooseDice(self):
+        # choices is a list of the indexes of the selected dice
+        choices = []             # No dice chosen yet
+        while True:
+            # wait for user to click a valid button
+            b = self.choose(["Die 1", "Die 2", "Die 3", "Die 4", "Die 5",
+                             "Roll Dice", "Score"])
+            if b[0] == "D":             # User clicked a die button
+                i = int(b[4]) - 1       # Translate label to die index
+                if i in choices:        # Currently selected, unselect it
+                    choices.remove(i)
+                    self.dice[i].setColor("black")
+                else:                   # Currently unselected, select it
+                    choices.append(i)
+                    self.dice[i].setColor("gray")
+            else:                       # User clicked Roll or Score
+                for d in self.dice:     # Revert appearance of all dice
+                    d.setColor("black")
+                if b == "Score":        # Score clicked, ignore other choices
+                    return []
+                elif choices != []:     # Don't accept Roll unless some
+                    return choices      #   dice are actually selected
+                
+    def close(self):
+        self.win.close()
+
 class PokerApp:
     def __init__(self, interface):
         self.dice = Dice()
@@ -187,178 +298,6 @@ class PokerApp:
             self.interface.setDice(self.dice.values())
             if roll < 3:
                 toRoll = self.interface.chooseDice()
-        
-class TextInterface:
-    def __init__(self):
-        print("Welcome to video poker.")
-
-    def setMoney(self, amount):
-        print(f"You currently have ${amount}.")
-
-    def setDice(self, values):
-        print(f"Dice: {values}")
-
-    def wantToPlay(self):
-        ans = input("Do you wish to try your luck? ")
-        return ans[0] in ['y', 'Y']
-    
-    def close(self):
-        print("\nThanks for playing!")
-
-    def showResult(self, msg, score):
-        print(f"{msg}. You win ${score}.")
-
-    def chooseDice(self):
-        instr = input("Enter which dice to roll (<Enter> to stop): ")
-        indexes = [(int(x) - 1) for x in instr.split()]
-        return indexes
-    
-class GraphicsInterface:
-    def __init__(self):
-        self.win = graphics.GraphWin("Dice Poker", 600, 400)
-        self.win.setBackground("green3")
-        banner = graphics.Text(graphics.Point(300, 30), "Python Poker Parlor")
-        banner.setSize(24)
-        banner.setFill("yellow2")
-        banner.setStyle("bold")
-        banner.draw(self.win)
-        self.msg = graphics.Text(graphics.Point(300, 380),
-                                 "Welcome to the Dice Table")
-        self.msg.setSize(18)
-        self.msg.draw(self.win)
-
-        self.buttons = []
-        b = Button(self.win, graphics.Point(300, 225), 400, 40, "Let's Play")
-        self.buttons.append(b)
-        b = Button(self.win, graphics.Point(300, 375), 400, 40, "Quit")
-        self.buttons.append(b)
-
-        self.initialized = False
-
-    def initialize(self):
-        ans = self.choose(["Let's Play", "Quit"])
-        if ans == "Let's Play":
-            self.win.close()
-            self.win = graphics.GraphWin("Dice Poker", 600, 400)
-            self.win.setBackground("green3")
-            banner = graphics.Text(graphics.Point(300, 30), "Python Poker Parlor")
-            banner.setSize(24)
-            banner.setFill("yellow2")
-            banner.setStyle("bold")
-            banner.draw(self.win)
-            self.msg = graphics.Text(graphics.Point(300, 380),
-                                     "Welcome to the Dice Table")
-            self.msg.setSize(18)
-            self.msg.draw(self.win)
-            self.createDice(graphics.Point(300, 100), 75)
-            self.buttons = []
-            self.addDiceButtons(graphics.Point(300, 170), 75, 30)
-            b = Button(self.win, graphics.Point(300, 230), 400, 40, "Roll Dice")
-            self.buttons.append(b)
-            b = Button(self.win, graphics.Point(300, 280), 150, 40, "Score")
-            self.buttons.append(b)
-            b = Button(self.win, graphics.Point(30, 375), 40, 30, "Help")
-            self.buttons.append(b)
-            b = Button(self.win, graphics.Point(570, 375), 40, 30, "Quit")
-            self.buttons.append(b)
-            self.money = graphics.Text(graphics.Point(300, 325), "$100")
-            self.money.setSize(18)
-            self.money.draw(self.win)
-            self.initialized = True
-            return True
-        elif ans == "Quit":
-            return False
-
-    def choose(self, choices):
-        buttons = self.buttons
-        # activate choice buttons, deactivate others
-        for b in buttons:
-            if b.getLabel() in choices:
-                b.activate()
-            else:
-                b.deactivate()
-        # get mouse clicks until an active button is clicked
-        while True:
-            p = self.win.getMouse()
-            for b in buttons:
-                if b.clicked(p):
-                    return b.getLabel()
-
-    def createDice(self, center, size):
-        center.move(-3 * size, 0)
-        self.dice = []
-        for i in range(5):
-            view = DieView(self.win, center, size)
-            self.dice.append(view)
-            center.move(1.5 * size, 0)
-    
-    def addDiceButtons(self, center, width, height):
-        center.move(-3 * width, 0)
-        for i in range(1, 6):
-            label = f'Die {i}'
-            b = Button(self.win, center, width, height, label)
-            self.buttons.append(b)
-            center.move(1.5 * width, 0)
-    
-    def setMoney(self, amount):
-        self.money.setText(f'${amount}')
-
-    def showResult(self, msg, score):
-        if score > 0:
-            text = f'{msg}! You win ${score}'
-        else:
-            text = f'You rolled {msg}'
-        self.msg.setText(text)
-
-    def setDice(self, values):
-        for i in range(5):
-            self.dice[i].setValue(values[i])
-
-    def wantToPlay(self):
-        if not self.initialized:
-            return self.initialize()
-        ans = self.choose(["Roll Dice", "Help", "Quit"])
-        self.msg.setText("")
-        return ans == "Roll Dice"
-    
-    def chooseDice(self):
-        # choices is a list of the indexes of the selected dice
-        choices = []
-        while True:
-            # wait for use to click a valid button
-            b = self.choose(['Die 1', 'Die 2', 'Die 3', 'Die 4', 'Die 5',
-                             'Roll Dice', 'Score', 'Help'])
-            if b[0] == 'D':
-                i = int(b[4]) - 1
-                if i in choices:
-                    choices.remove(i)
-                    self.dice[i].setColor("black")
-                else:
-                    choices.append(i)
-                    self.dice[i].setColor("grey")
-            else:
-                for d in self.dice:
-                    d.setColor("black")
-                if b == "Score":
-                    return []
-                elif b == "Help":
-                    help = graphics.GraphWin("Help", 600, 300)
-                    help.setBackground("green3")
-                    helpText = graphics.Text(graphics.Point(300, 150),
-                        "Hand / Pay\n" + \
-                        "Two Pairs / $5\n" + \
-                        "Three of a Kind / $8\n" + \
-                        "Full House (A Pair and a Three of a Kind) / $12\n" + \
-                        "Four of a Kind / $15\n" + \
-                        "Straight (1-5 or 2-6) / $20\n" + \
-                        "Five of a Kind / $30")
-                    helpText.setFill("yellow2")
-                    helpText.draw(help)
-                elif choices != []:
-                    return choices
-    
-    def close(self):
-        self.win.close()
 
 def main():
     app = PokerApp(GraphicsInterface())
