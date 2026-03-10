@@ -13,6 +13,7 @@
 # a file so that it persists between program invocations.
 
 import graphics
+import pickle
 import random
 
 class Dice:
@@ -169,6 +170,8 @@ class DieView:
 
 class GraphicsInterface:
     def __init__(self):
+        self.playInitialized = False
+
         self.win = graphics.GraphWin("Dice Poker", 600, 400)
         self.win.setBackground("green3")
         banner = graphics.Text(graphics.Point(300, 30), "Python Poker Parlor")
@@ -176,17 +179,8 @@ class GraphicsInterface:
         banner.setFill("yellow2")
         banner.setStyle("bold")
         banner.draw(self.win)
-        # Splash screen
-        self.msg = graphics.Text(graphics.Point(300, 200),
-                                 "Welcome to video poker.")
-        self.msg.setSize(18)
-        self.msg.draw(self.win)
-        self.buttons = []
-        b = Button(self.win, graphics.Point(300, 280), 400, 40, "Let's Play")
-        self.buttons.append(b)
-        b = Button(self.win, graphics.Point(570, 375), 40, 30, "Quit")
-        self.buttons.append(b)
-        self.playInitialized = False
+
+        self.setupSplashScreen()
 
     def choose(self, choices):
         buttons = self.buttons
@@ -222,6 +216,7 @@ class GraphicsInterface:
             center.move(1.5 * width, 0)
     
     def setMoney(self, amt):
+        self.score = amt
         self.money.setText(f"${amt}")
 
     def showResult(self, msg, score):
@@ -234,6 +229,21 @@ class GraphicsInterface:
     def setDice(self, values):
         for i in range(5):
             self.dice[i].setValue(values[i])
+
+    def setupSplashScreen(self):
+        self.loadHighScores()
+        msg = "Welcome to video poker."
+        msg = msg + "\nHigh Scores"
+        for h in self.highScores:
+            msg = msg + f"\n{h[1]} ${h[0]}"
+        self.msg = graphics.Text(graphics.Point(300, 200), msg)
+        self.msg.setSize(16)
+        self.msg.draw(self.win)
+        self.buttons = []
+        b = Button(self.win, graphics.Point(300, 375), 400, 30, "Let's Play")
+        self.buttons.append(b)
+        b = Button(self.win, graphics.Point(570, 375), 40, 30, "Quit")
+        self.buttons.append(b)
 
     def setupPlay(self):
         if self.playInitialized:
@@ -290,6 +300,29 @@ class GraphicsInterface:
             pay.setFill("yellow2")
             pay.draw(helpWindow)
 
+    def promptPlayerName(self):
+        playerNamePrompt = graphics.GraphWin("Congratulations")
+        playerNamePrompt.setCoords(0, 0, 10, 10)
+        playerNamePrompt.setBackground("green3")
+        msg = graphics.Text(graphics.Point(5, 7), "Enter your name:")
+        msg.setSize(18)
+        msg.setFill("yellow2")
+        msg.draw(playerNamePrompt)
+        playerName = graphics.Entry(graphics.Point(5, 5), 10)
+        playerName.setSize(18)
+        playerName.setFill("yellow2")
+        playerName.setText("")
+        playerName.draw(playerNamePrompt)
+        submit = Button(playerNamePrompt, graphics.Point(5, 1), 3, 1, "Submit")
+        submit.activate()
+        while True:
+            p = playerNamePrompt.getMouse()
+            if submit.clicked(p):
+                name = playerName.getText()
+                if name != "":
+                    playerNamePrompt.close()
+                    return name
+
     def wantToPlay(self):
         ans = self.choose(["Let's Play", "Roll Dice", "Quit"])
         self.msg.setText("")
@@ -322,8 +355,29 @@ class GraphicsInterface:
                     return choices      #   dice are actually selected
                 elif b == "Help":
                     self.showHelp()
+
+    def loadHighScores(self):
+        try:
+            with open("highscores.dat", "rb") as infile:
+                self.highScores = pickle.load(infile)
+                self.highScores.sort(reverse=True)
+        except FileNotFoundError:
+            self.highScores = []
+
+    def saveHighScores(self):
+        if self.playInitialized and \
+            (len(self.highScores) == 0 or \
+             len(self.highScores) < 10 or \
+             self.score > self.highScores[-1][0]):
+            playerName = self.promptPlayerName()
+            self.highScores.append((self.score, playerName))
+            self.highScores.sort(reverse=True)
+            # Save top 10 scores
+            with open("highscores.dat", "wb") as outfile:
+                pickle.dump(self.highScores[:10], outfile)
                 
     def close(self):
+        self.saveHighScores()
         self.win.close()
 
 class PokerApp:
