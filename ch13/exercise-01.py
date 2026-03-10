@@ -254,12 +254,41 @@ class GraphicsInterface:
         self.buttons.append(b)
         b = Button(self.win, graphics.Point(300, 280), 150, 40, "Score")
         self.buttons.append(b)
+        b = Button(self.win, graphics.Point(30, 375), 40, 30, "Help")
+        self.buttons.append(b)
         b = Button(self.win, graphics.Point(570, 375), 40, 30, "Quit")
         self.buttons.append(b)
         self.money = graphics.Text(graphics.Point(300, 325), "$100")
         self.money.setSize(18)
         self.money.draw(self.win)
         self.playInitialized = True
+    
+    def showHelp(self):
+        helpWindow = graphics.GraphWin("Help", 400, 300)
+        helpWindow.setCoords(0, 0, 10, 10)
+        helpWindow.setBackground("green3")
+        banner = graphics.Text(graphics.Point(4, 9), "Payout")
+        banner.setSize(24)
+        banner.setFill("yellow2")
+        banner.setStyle("bold")
+        banner.draw(helpWindow)
+        payouts = [("Five of a Kind", 30),
+                   ("Straight", 20),
+                   ("Four of a Kind", 15),
+                   ("Full House", 12),
+                   ("Three of a Kind", 8),
+                   ("Two Pairs", 5),
+                   ("Garbage", 0)]
+        for i in range(len(payouts)):
+            payout = payouts[i]
+            hand = graphics.Text(graphics.Point(3, i+1), payout[0])
+            hand.setSize(18)
+            hand.setFill("yellow2")
+            hand.draw(helpWindow)
+            pay = graphics.Text(graphics.Point(7, i+1), f"${payout[1]}")
+            pay.setSize(18)
+            pay.setFill("yellow2")
+            pay.draw(helpWindow)
 
     def wantToPlay(self):
         ans = self.choose(["Let's Play", "Roll Dice", "Quit"])
@@ -275,7 +304,7 @@ class GraphicsInterface:
         while True:
             # wait for user to click a valid button
             b = self.choose(["Die 1", "Die 2", "Die 3", "Die 4", "Die 5",
-                             "Roll Dice", "Score"])
+                             "Roll Dice", "Score", "Help"])
             if b[0] == "D":             # User clicked a die button
                 i = int(b[4]) - 1       # Translate label to die index
                 if i in choices:        # Currently selected, unselect it
@@ -291,6 +320,8 @@ class GraphicsInterface:
                     return []
                 elif choices != []:     # Don't accept Roll unless some
                     return choices      #   dice are actually selected
+                elif b == "Help":
+                    self.showHelp()
                 
     def close(self):
         self.win.close()
